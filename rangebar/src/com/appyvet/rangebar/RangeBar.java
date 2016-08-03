@@ -1134,18 +1134,23 @@ public class RangeBar extends View {
     /**
      * Creates two new Pins.
      */
+
+
     private void createPins() {
         Context ctx = getContext();
         float yPos = getYPos();
 
+        float density = getResources().getDisplayMetrics().density;
+        float expandedPinRadius = mExpandedPinRadius / density;
+
         if (mIsRangeBar) {
             mLeftThumb = new PinView(ctx);
-            mLeftThumb.init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor,
+            mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor,
                     mMinPinFont, mMaxPinFont, false);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb
-                .init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
+                .init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
                         mMaxPinFont, false);
 
         float marginLeft = getMarginLeft();
