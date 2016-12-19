@@ -17,7 +17,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.TypedValue;
-
 /**
  * This class represents the underlying gray bar in the RangeBar (without the
  * thumbs).
@@ -36,6 +35,7 @@ public class Bar {
     private final float mRightX;
 
     private final float mY;
+    private final int mTickCount;
 
     private int mNumSegments;
 
@@ -73,6 +73,7 @@ public class Bar {
         mRightX = x + length;
         mY = y;
 
+        mTickCount = tickCount;
         mNumSegments = tickCount - 1;
         mTickDistance = length / mNumSegments;
         mTickHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -147,8 +148,9 @@ public class Bar {
      */
     public float getNearestTickCoordinate(PinView thumb) {
 
-        final int nearestTickIndex = getNearestTickIndex(thumb);
-
+        int nearestTickIndex = getNearestTickIndex(thumb);
+        if(nearestTickIndex < 0) nearestTickIndex = 0;
+        else if(nearestTickIndex >= mTickCount) nearestTickIndex = mTickCount - 1;
         return mLeftX + (nearestTickIndex * mTickDistance);
     }
 
