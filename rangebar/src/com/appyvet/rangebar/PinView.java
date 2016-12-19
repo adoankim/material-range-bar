@@ -41,6 +41,7 @@ class PinView extends View {
     // Sets the default values for radius, normal, pressed if circle is to be
     // drawn but no value is given.
     private static final float DEFAULT_THUMB_RADIUS_DP = 14;
+    private static final float DEFAULT_TEXT_Y_PADDING = 3.5f;
 
     // Member Variables ////////////////////////////////////////////////////////
 
@@ -134,7 +135,7 @@ class PinView extends View {
                 15, mRes.getDisplayMetrics());
         mCircleRadiusPx = circleRadius;
         mTextYPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                3.5f, mRes.getDisplayMetrics());
+                getTextYPadding(), mRes.getDisplayMetrics());
         // If one of the attributes are set, but the others aren't, set the
         // attributes to default
         if (pinRadiusDP == -1) {
@@ -171,6 +172,10 @@ class PinView extends View {
                 targetRadius,
                 mRes.getDisplayMetrics());
         mY = y;
+    }
+
+    protected float getTextYPadding() {
+        return DEFAULT_TEXT_Y_PADDING;
     }
 
     /**
@@ -265,23 +270,31 @@ class PinView extends View {
             mBounds.set((int) mX - mPinRadiusPx,
                     (int) mY - (mPinRadiusPx * 2) - (int) mPinPadding,
                     (int) mX + mPinRadiusPx, (int) mY - (int) mPinPadding);
-            mPin.setBounds(mBounds);
-            String text = mValue;
-
-            if (this.formatter != null) {
-                text = formatter.format(text);
-            }
-
-            calibrateTextSize(mTextPaint, text, mBounds.width());
-            mTextPaint.getTextBounds(text, 0, text.length(), mBounds);
-            mTextPaint.setTextAlign(Paint.Align.CENTER);
-            mPin.setColorFilter(mPinFilter);
-            mPin.draw(canvas);
-            canvas.drawText(text,
-                    mX, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
-                    mTextPaint);
+            drawPin(canvas);
+            drawText(canvas);
         }
         super.draw(canvas);
+    }
+
+    protected void drawPin(Canvas canvas) {
+        mPin.setBounds(mBounds);
+        mPin.setColorFilter(mPinFilter);
+        mPin.draw(canvas);
+    }
+
+    protected void drawText(Canvas canvas) {
+
+        String text = mValue;
+
+        if (this.formatter != null) {
+            text = formatter.format(text);
+        }
+        calibrateTextSize(mTextPaint, text, mBounds.width());
+        mTextPaint.getTextBounds(text, 0, text.length(), mBounds);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(text,
+                mX, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
+                mTextPaint);
     }
 
     // Private Methods /////////////////////////////////////////////////////////////////

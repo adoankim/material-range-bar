@@ -80,14 +80,23 @@ public class Bar {
                 ctx.getResources().getDisplayMetrics());
 
         // Initialize the paint.
-        mBarPaint = new Paint();
-        mBarPaint.setColor(barColor);
-        mBarPaint.setStrokeWidth(barWeight);
-        mBarPaint.setAntiAlias(true);
+        mBarPaint = setupBarPaint(barColor, barWeight);
         mTickPaint = new Paint();
         mTickPaint.setColor(tickColor);
         mTickPaint.setStrokeWidth(barWeight);
         mTickPaint.setAntiAlias(true);
+    }
+
+    protected Paint setupBarPaint(int barColor, float barWeight) {
+        Paint paint = new Paint();
+        paint.setColor(barColor);
+        paint.setStrokeWidth(barWeight);
+        paint.setAntiAlias(true);
+        return paint;
+    }
+
+    protected Paint getBarPaint(){
+        return mBarPaint;
     }
 
     // Package-Private Methods /////////////////////////////////////////////////
@@ -119,6 +128,15 @@ public class Bar {
      */
     public float getRightX() {
         return mRightX;
+    }
+
+    /**
+     * Get the y-coordinate of the bar.
+     *
+     * @return y-coordinate of the bar
+     */
+    public float getBarY() {
+        return mY;
     }
 
     /**

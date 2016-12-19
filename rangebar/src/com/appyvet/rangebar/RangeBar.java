@@ -346,22 +346,21 @@ public class RangeBar extends View {
 
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
-            mLeftThumb = new PinView(ctx);
+            mLeftThumb = buildPin();
             mLeftThumb.setFormatter(mFormatter);
             mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
                     mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
         }
-        mRightThumb = new PinView(ctx);
+        mRightThumb = buildPin();
         mRightThumb.setFormatter(mFormatter);
         mRightThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
                 mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
 
         // Create the underlying bar.
-        final float marginLeft = Math.max(mExpandedPinRadius, mCircleSize);
+        final float marginLeft = getMarginLeft();
 
-        final float barLength = w - (2 * marginLeft);
-        mBar = new Bar(ctx, marginLeft, yPos, barLength, mTickCount, mTickHeightDP, mTickColor,
-                mBarWeight, mBarColor);
+        final float barLength = getBarLength();
+        createBarAndRefresh();
 
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
@@ -387,6 +386,10 @@ public class RangeBar extends View {
         // Create the line connecting the two thumbs.
         mConnectingLine = new ConnectingLine(ctx, yPos, mConnectingLineWeight,
                 mConnectingLineColor);
+    }
+
+    protected PinView buildPin() {
+        return new PinView(getContext());
     }
 
     @Override
@@ -538,7 +541,7 @@ public class RangeBar extends View {
                 }
             }
 
-            createBar();
+            createBarAndRefresh();
             createPins();
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
@@ -578,7 +581,7 @@ public class RangeBar extends View {
                 }
             }
 
-            createBar();
+            createBarAndRefresh();
             createPins();
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
@@ -618,7 +621,7 @@ public class RangeBar extends View {
                 }
             }
 
-            createBar();
+            createBarAndRefresh();
             createPins();
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
@@ -634,7 +637,7 @@ public class RangeBar extends View {
     public void setTickHeight(float tickHeight) {
 
         mTickHeightDP = tickHeight;
-        createBar();
+        createBarAndRefresh();
     }
 
     /**
@@ -646,7 +649,7 @@ public class RangeBar extends View {
     public void setBarWeight(float barWeight) {
 
         mBarWeight = barWeight;
-        createBar();
+        createBarAndRefresh();
     }
 
     /**
@@ -656,7 +659,7 @@ public class RangeBar extends View {
      */
     public void setBarColor(int barColor) {
         mBarColor = barColor;
-        createBar();
+        createBarAndRefresh();
     }
 
     /**
@@ -711,7 +714,7 @@ public class RangeBar extends View {
     public void setTickColor(int tickColor) {
 
         mTickColor = tickColor;
-        createBar();
+        createBarAndRefresh();
     }
 
     /**
@@ -998,7 +1001,7 @@ public class RangeBar extends View {
             mTickColor = mActiveTickColor;
         }
 
-        createBar();
+        createBarAndRefresh();
         createPins();
         createConnectingLine();
         super.setEnabled(enabled);
@@ -1106,17 +1109,37 @@ public class RangeBar extends View {
     /**
      * Creates a new mBar
      */
-    private void createBar() {
-        mBar = new Bar(getContext(),
+    private void createBarAndRefresh() {
+        mBar = buildBar();
+        invalidate();
+    }
+
+    protected Bar buildBar(){
+        return new Bar(getContext(),
                 getMarginLeft(),
                 getYPos(),
                 getBarLength(),
-                mTickCount,
-                mTickHeightDP,
-                mTickColor,
-                mBarWeight,
-                mBarColor);
-        invalidate();
+                getTickCount(),
+                getTickHeightDP(),
+                getTickColor(),
+                getBarWeight(),
+                getBarColor());
+    }
+
+    protected int getBarColor() {
+        return mBarColor;
+    }
+
+    protected float getBarWeight() {
+        return mBarWeight;
+    }
+
+    protected int getTickColor() {
+        return mTickColor;
+    }
+
+    protected float getTickHeightDP() {
+        return mTickHeightDP;
     }
 
     /**
@@ -1144,11 +1167,11 @@ public class RangeBar extends View {
         float expandedPinRadius = mExpandedPinRadius / density;
 
         if (mIsRangeBar) {
-            mLeftThumb = new PinView(ctx);
+            mLeftThumb = buildPin();
             mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor,
                     mMinPinFont, mMaxPinFont, false);
         }
-        mRightThumb = new PinView(ctx);
+        mRightThumb = buildPin();
         mRightThumb
                 .init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
                         mMaxPinFont, false);
@@ -1172,7 +1195,7 @@ public class RangeBar extends View {
      *
      * @return float marginLeft
      */
-    private float getMarginLeft() {
+    protected float getMarginLeft() {
         return Math.max(mExpandedPinRadius, mCircleSize);
     }
 
@@ -1181,7 +1204,7 @@ public class RangeBar extends View {
      *
      * @return float yPos
      */
-    private float getYPos() {
+    protected float getYPos() {
         return (getHeight() - mBarPaddingBottom);
     }
 
@@ -1190,7 +1213,7 @@ public class RangeBar extends View {
      *
      * @return float barLength
      */
-    private float getBarLength() {
+    protected float getBarLength() {
         return (getWidth() - 2 * getMarginLeft());
     }
 
