@@ -14,21 +14,38 @@
 package com.appyvet.rangebar;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 public class BubbleRangeBar extends RangeBar {
     private static final int BUBBLE_BAR_MARGIN = 50;
+    private static final int DEFAULT_LEFT_LEGEND_MARGIN = 20;
+    private LegendText mLeftLegend;
+    private LegendText mRightLegend;
 
     public BubbleRangeBar(Context context) {
         super(context);
+        init(context);
     }
 
     public BubbleRangeBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context, attrs);
     }
 
     public BubbleRangeBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init(context, attrs);
+    }
+
+    private void init(Context context) {
+        mLeftLegend = new LegendText(context);
+        mRightLegend = new LegendText(context);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        mLeftLegend = new LegendText(context, attrs);
+        mRightLegend = new LegendText(context, attrs);
     }
 
     @Override
@@ -50,7 +67,30 @@ public class BubbleRangeBar extends RangeBar {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        setupLegends();
+    }
+
+    private void setupLegends() {
+        mLeftLegend.setX(DEFAULT_LEFT_LEGEND_MARGIN);
+        mLeftLegend.setY(getHeight());
+        mLeftLegend.setLabel(String.valueOf((int)getTickStart()));
+
+        mRightLegend.setX(getBarLength());
+        mRightLegend.setY(getHeight());
+        mRightLegend.setLabel(String.valueOf((int)getTickEnd()));
+    }
+
+    @Override
     protected PinView buildPin() {
         return new BubblePinView(getContext());
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        mLeftLegend.draw(canvas);
+        mRightLegend.draw(canvas);
     }
 }

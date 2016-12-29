@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BubbleRangeBar">
+        <attr name="legendTextSize" format="dimension" />
+        <attr name="legendColor" format="color" />
+    </declare-styleable>
+</resources>
