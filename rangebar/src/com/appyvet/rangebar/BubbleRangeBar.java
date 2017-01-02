@@ -16,6 +16,7 @@ package com.appyvet.rangebar;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 public class BubbleRangeBar extends RangeBar {
     private static final int BUBBLE_BAR_MARGIN = 50;
@@ -92,5 +93,19 @@ public class BubbleRangeBar extends RangeBar {
         super.onDraw(canvas);
         mLeftLegend.draw(canvas);
         mRightLegend.draw(canvas);
+        checkPinOverlap();
+    }
+
+    private void checkPinOverlap() {
+        float thumbTextPadding = 0;
+        int pinDistance = Math.abs(getRightIndex()-getLeftIndex());
+        if( pinDistance >= 1 && pinDistance <= 3) {
+            thumbTextPadding = 35 - pinDistance * 5;
+        }
+
+        getLeftThumb().setXTextPadding(thumbTextPadding);
+        getRightThumb().setXTextPadding(-thumbTextPadding);
+
+
     }
 }

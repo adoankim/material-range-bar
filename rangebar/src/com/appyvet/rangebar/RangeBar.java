@@ -1142,6 +1142,16 @@ public class RangeBar extends View {
         return mTickHeightDP;
     }
 
+    protected PinView getLeftThumb() {
+        if(getLeftIndex() > getRightIndex()) return mRightThumb;
+        return mLeftThumb;
+    }
+
+    protected PinView getRightThumb(){
+        if(getLeftIndex() > getRightIndex()) return mLeftThumb;
+        return mRightThumb;
+    }
+
     /**
      * Creates a new ConnectingLine.
      */

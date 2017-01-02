@@ -74,6 +74,8 @@ class PinView extends View {
 
     private float mTextYPadding;
 
+    private float mTextXPadding;
+
     private Rect mBounds = new Rect();
 
     private Resources mRes;
@@ -209,6 +211,16 @@ class PinView extends View {
         mValue = x;
     }
 
+
+    /**
+     * Set horizontal padding for text value
+     *
+     * @param xTextPadding horizontal padding
+     */
+    public void setXTextPadding(float xTextPadding){
+        mTextXPadding = xTextPadding;
+    }
+
     /**
      * Determine if the pin is pressed
      *
@@ -293,7 +305,7 @@ class PinView extends View {
         mTextPaint.getTextBounds(text, 0, text.length(), mBounds);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         canvas.drawText(text,
-                mX, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
+                mX - mTextXPadding, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
                 mTextPaint);
     }
 
