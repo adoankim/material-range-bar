@@ -187,6 +187,8 @@ public class RangeBar extends View {
 
     private boolean drawTicks = true;
 
+    private boolean mDrawPins = true;
+
     private boolean mArePinsTemporary = true;
 
     private PinTextFormatter mPinTextFormatter = new PinTextFormatter() {
@@ -245,6 +247,7 @@ public class RangeBar extends View {
         bundle.putFloat("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
         bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
+        bundle.putBoolean("DRAW_PINS", mDrawPins);
         bundle.putInt("LEFT_INDEX", mLeftIndex);
         bundle.putInt("RIGHT_INDEX", mRightIndex);
 
@@ -282,6 +285,7 @@ public class RangeBar extends View {
             mBarPaddingBottom = bundle.getFloat("BAR_PADDING_BOTTOM");
             mIsRangeBar = bundle.getBoolean("IS_RANGE_BAR");
             mArePinsTemporary = bundle.getBoolean("ARE_PINS_TEMPORARY");
+            mDrawPins = bundle.getBoolean("DRAW_PINS");
 
             mLeftIndex = bundle.getInt("LEFT_INDEX");
             mRightIndex = bundle.getInt("RIGHT_INDEX");
@@ -400,14 +404,18 @@ public class RangeBar extends View {
             if (drawTicks) {
                 mBar.drawTicks(canvas);
             }
-            mLeftThumb.draw(canvas);
+            if (mDrawPins) {
+                mLeftThumb.draw(canvas);
+            }
         } else {
             mConnectingLine.draw(canvas, getMarginLeft(), mRightThumb);
             if (drawTicks) {
                 mBar.drawTicks(canvas);
             }
         }
-        mRightThumb.draw(canvas);
+        if (mDrawPins) {
+            mRightThumb.draw(canvas);
+        }
 
     }
 
@@ -1090,6 +1098,7 @@ public class RangeBar extends View {
                             DEFAULT_BAR_PADDING_BOTTOM_DP, getResources().getDisplayMetrics()));
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_rangeBar, true);
             mArePinsTemporary = ta.getBoolean(R.styleable.RangeBar_temporaryPins, true);
+            mDrawPins = ta.getBoolean(R.styleable.RangeBar_drawPins, true);
 
             float density = getResources().getDisplayMetrics().density;
             mMinPinFont = ta.getDimension(R.styleable.RangeBar_pinMinFont,
