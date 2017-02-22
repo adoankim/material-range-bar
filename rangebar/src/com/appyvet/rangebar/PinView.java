@@ -90,6 +90,7 @@ class PinView extends View {
     private float mMaxPinFont = RangeBar.DEFAULT_MAX_PIN_FONT_SP;
 
     private boolean mPinsAreTemporary;
+    private boolean mDrawPins;
 
     private boolean mHasBeenPressed = false;
 
@@ -108,8 +109,7 @@ class PinView extends View {
     /**
      * The view is created empty with a default constructor. Use init to set all the initial
      * variables for the pin
-     *
-     * @param ctx          Context
+     *  @param ctx          Context
      * @param y            The y coordinate to raw the pin (i.e. the bar location)
      * @param pinRadiusDP  the initial size of the pin
      * @param pinColor     the color of the pin
@@ -118,9 +118,10 @@ class PinView extends View {
      * @param minFont  the minimum font size for the pin text
      * @param maxFont  the maximum font size for the pin text
      * @param pinsAreTemporary  whether to show the pin initially or just the circle
+     * @param drawPins
      */
     public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
-            float circleRadius, int circleColor, float minFont, float maxFont, boolean pinsAreTemporary) {
+                     float circleRadius, int circleColor, float minFont, float maxFont, boolean pinsAreTemporary, boolean drawPins) {
 
         mRes = ctx.getResources();
         mPin = ContextCompat.getDrawable(ctx, R.drawable.rotate);
@@ -129,6 +130,7 @@ class PinView extends View {
         mMinPinFont = minFont / mDensity;
         mMaxPinFont = maxFont / mDensity;
         mPinsAreTemporary = pinsAreTemporary;
+        mDrawPins = drawPins;
 
         mPinPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 15, mRes.getDisplayMetrics());
@@ -261,7 +263,7 @@ class PinView extends View {
     public void draw(Canvas canvas) {
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
-        if (mPinRadiusPx > 0 && (mHasBeenPressed || !mPinsAreTemporary)) {
+        if (mDrawPins && mPinRadiusPx > 0 && (mHasBeenPressed || !mPinsAreTemporary)) {
             mBounds.set((int) mX - mPinRadiusPx,
                     (int) mY - (mPinRadiusPx * 2) - (int) mPinPadding,
                     (int) mX + mPinRadiusPx, (int) mY - (int) mPinPadding);

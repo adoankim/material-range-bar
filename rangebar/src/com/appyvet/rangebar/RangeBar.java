@@ -353,12 +353,12 @@ public class RangeBar extends View {
             mLeftThumb = new PinView(ctx);
             mLeftThumb.setFormatter(mFormatter);
             mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                    mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+                    mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mDrawPins);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb.setFormatter(mFormatter);
         mRightThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+                mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mDrawPins);
 
         // Create the underlying bar.
         final float marginLeft = Math.max(mExpandedPinRadius, mCircleSize);
@@ -404,18 +404,14 @@ public class RangeBar extends View {
             if (drawTicks) {
                 mBar.drawTicks(canvas);
             }
-            if (mDrawPins) {
-                mLeftThumb.draw(canvas);
-            }
+            mLeftThumb.draw(canvas);
         } else {
             mConnectingLine.draw(canvas, getMarginLeft(), mRightThumb);
             if (drawTicks) {
                 mBar.drawTicks(canvas);
             }
         }
-        if (mDrawPins) {
-            mRightThumb.draw(canvas);
-        }
+        mRightThumb.draw(canvas);
 
     }
 
@@ -1155,12 +1151,12 @@ public class RangeBar extends View {
         if (mIsRangeBar) {
             mLeftThumb = new PinView(ctx);
             mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor,
-                    mMinPinFont, mMaxPinFont, false);
+                    mMinPinFont, mMaxPinFont, false, mDrawPins);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb
                 .init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
-                        mMaxPinFont, false);
+                        mMaxPinFont, false, mDrawPins);
 
         float marginLeft = getMarginLeft();
         float barLength = getBarLength();
