@@ -1214,7 +1214,7 @@ public class RangeBar extends View {
             float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getX() - x) : 0;
             float rightThumbXDistance = Math.abs(mRightThumb.getX() - x);
 
-            if (leftThumbXDistance < rightThumbXDistance) {
+            if (leftThumbXDistance < rightThumbXDistance && (getMarginLeft() - x) >= getMarginLeft() ) {
                 if (mIsRangeBar) {
                     mLeftThumb.setX(x);
                     releasePin(mLeftThumb);
