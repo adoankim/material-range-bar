@@ -111,17 +111,13 @@ class PinView extends View {
      * variables for the pin
      *  @param ctx          Context
      * @param y            The y coordinate to raw the pin (i.e. the bar location)
-     * @param pinRadiusDP  the initial size of the pin
-     * @param pinColor     the color of the pin
      * @param textColor    the color of the value text in the pin
      * @param circleRadius the radius of the selector circle
      * @param minFont  the minimum font size for the pin text
      * @param maxFont  the maximum font size for the pin text
-     * @param pinsAreTemporary  whether to show the pin initially or just the circle
-     * @param drawPins
      */
-    public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
-                     float circleRadius, int circleColor, float minFont, float maxFont, boolean pinsAreTemporary, boolean drawPins) {
+    public void init(Context ctx, float y, int textColor,
+                     float circleRadius, int circleColor, float minFont, float maxFont) {
 
         mRes = ctx.getResources();
         mPin = ContextCompat.getDrawable(ctx, R.drawable.rotate);
@@ -129,25 +125,13 @@ class PinView extends View {
         mDensity = getResources().getDisplayMetrics().density;
         mMinPinFont = minFont / mDensity;
         mMaxPinFont = maxFont / mDensity;
-        mPinsAreTemporary = pinsAreTemporary;
-        mDrawPins = drawPins;
 
         mPinPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 15, mRes.getDisplayMetrics());
         mCircleRadiusPx = circleRadius;
         mTextYPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 3.5f, mRes.getDisplayMetrics());
-        // If one of the attributes are set, but the others aren't, set the
-        // attributes to default
-        if (pinRadiusDP == -1) {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    DEFAULT_THUMB_RADIUS_DP,
-                    mRes.getDisplayMetrics());
-        } else {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    pinRadiusDP,
-                    mRes.getDisplayMetrics());
-        }
+
         //Set text size in px from dp
         int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 15, mRes.getDisplayMetrics());
@@ -162,8 +146,6 @@ class PinView extends View {
         mCirclePaint.setColor(circleColor);
         mCirclePaint.setAntiAlias(true);
 
-        //Color filter for the selection pin
-        mPinFilter = new LightingColorFilter(pinColor, pinColor);
 
         // Sets the minimum touchable area, but allows it to expand based on
         // image size

@@ -16,6 +16,7 @@ package com.appyvet.rangebar;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.TypedValue;
 
 /**
@@ -25,11 +26,8 @@ import android.util.TypedValue;
 public class Bar {
 
     // Member Variables ////////////////////////////////////////////////////////
-
-    private final Paint mBarPaint;
-
-    private final Paint mTickPaint;
-
+    private final RectF mBoundRect;
+    private final Paint mBoundRectPaint;
     // Left-coordinate of the horizontal bar.
     private final float mLeftX;
 
@@ -41,7 +39,6 @@ public class Bar {
 
     private float mTickDistance;
 
-    private final float mTickHeight;
 
     // Constructor /////////////////////////////////////////////////////////////
 
@@ -49,24 +46,20 @@ public class Bar {
     /**
      * Bar constructor
      *
-     * @param ctx          the context
      * @param x            the start x co-ordinate
      * @param y            the y co-ordinate
      * @param length       the length of the bar in px
      * @param tickCount    the number of ticks on the bar
-     * @param tickHeightDP the height of each tick
-     * @param tickColor    the color of each tick
-     * @param barWeight    the weight of the bar
      * @param barColor     the color of the bar
+     * @param barPadding   the padding of the bar
+     * @param barStroke    the stroke size of the bar
      */
-    public Bar(Context ctx,
-            float x,
+    public Bar(float x,
             float y,
             float length,
             int tickCount,
-            float tickHeightDP,
-            int tickColor,
-            float barWeight,
+            float barPadding,
+            float barStroke,
             int barColor) {
 
         mLeftX = x;
@@ -75,19 +68,17 @@ public class Bar {
 
         mNumSegments = tickCount - 1;
         mTickDistance = length / mNumSegments;
-        mTickHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                tickHeightDP,
-                ctx.getResources().getDisplayMetrics());
 
-        // Initialize the paint.
-        mBarPaint = new Paint();
-        mBarPaint.setColor(barColor);
-        mBarPaint.setStrokeWidth(barWeight);
-        mBarPaint.setAntiAlias(true);
-        mTickPaint = new Paint();
-        mTickPaint.setColor(tickColor);
-        mTickPaint.setStrokeWidth(barWeight);
-        mTickPaint.setAntiAlias(true);
+        mBoundRectPaint = new Paint();
+        mBoundRectPaint.setColor(barColor);
+        mBoundRectPaint.setStrokeWidth(barStroke);
+        mBoundRectPaint.setAntiAlias(true);
+        mBoundRectPaint.setStyle(Paint.Style.STROKE);
+
+        mBoundRect = new RectF(mLeftX - barPadding,
+                mY - barPadding,
+                mRightX + barPadding,
+                mY + barPadding);
     }
 
     // Package-Private Methods /////////////////////////////////////////////////
@@ -100,7 +91,7 @@ public class Bar {
      */
     public void draw(Canvas canvas) {
 
-        canvas.drawLine(mLeftX, mY, mRightX, mY, mBarPaint);
+        canvas.drawRoundRect(mBoundRect, 30, 30, mBoundRectPaint);
     }
 
     /**
@@ -143,39 +134,5 @@ public class Bar {
     public int getNearestTickIndex(PinView thumb) {
 
         return (int) ((thumb.getX() - mLeftX + mTickDistance / 2f) / mTickDistance);
-    }
-
-
-    /**
-     * Set the number of ticks that will appear in the RangeBar.
-     *
-     * @param tickCount the number of ticks
-     */
-    public void setTickCount(int tickCount) {
-
-        final float barLength = mRightX - mLeftX;
-
-        mNumSegments = tickCount - 1;
-        mTickDistance = barLength / mNumSegments;
-    }
-
-    // Private Methods /////////////////////////////////////////////////////////
-
-    /**
-     * Draws the tick marks on the bar.
-     *
-     * @param canvas Canvas to draw on; should be the Canvas passed into {#link
-     *               View#onDraw()}
-     */
-    public void drawTicks(Canvas canvas) {
-
-        // Loop through and draw each tick (except final tick).
-        for (int i = 0; i < mNumSegments; i++) {
-            final float x = i * mTickDistance + mLeftX;
-            canvas.drawCircle(x, mY, mTickHeight, mTickPaint);
-        }
-        // Draw final tick. We draw the final tick outside the loop to avoid any
-        // rounding discrepancies.
-        canvas.drawCircle(mRightX, mY, mTickHeight, mTickPaint);
     }
 }

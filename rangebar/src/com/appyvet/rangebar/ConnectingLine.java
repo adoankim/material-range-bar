@@ -29,6 +29,7 @@ public class ConnectingLine {
     private final Paint mPaint;
 
     private final float mY;
+    private final float mConnectingLineWeight;
 
     // Constructor /////////////////////////////////////////////////////////////
 
@@ -45,14 +46,14 @@ public class ConnectingLine {
 
         final Resources res = ctx.getResources();
 
-        float connectingLineWeight1 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+        mConnectingLineWeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 connectingLineWeight,
                 res.getDisplayMetrics());
 
         // Initialize the paint, set values
         mPaint = new Paint();
         mPaint.setColor(connectingLineColor);
-        mPaint.setStrokeWidth(connectingLineWeight1);
+        mPaint.setStrokeWidth(mConnectingLineWeight);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setAntiAlias(true);
 
@@ -69,7 +70,11 @@ public class ConnectingLine {
      * @param rightThumb the right thumb
      */
     public void draw(Canvas canvas, PinView leftThumb, PinView rightThumb) {
-        canvas.drawLine(leftThumb.getX(), mY, rightThumb.getX(), mY, mPaint);
+        if(leftThumb.getX() == rightThumb.getX()) {
+            canvas.drawLine(leftThumb.getX() - 1, mY, rightThumb.getX() + 1, mY, mPaint);
+        } else {
+            canvas.drawLine(leftThumb.getX(), mY, rightThumb.getX(), mY, mPaint);
+        }
     }
 
     /**

@@ -25,7 +25,6 @@ package com.appyvet.rangebar;
  * governing permissions and limitations under the License.
  */
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -74,6 +73,10 @@ public class RangeBar extends View {
 
     public static final float DEFAULT_MAX_PIN_FONT_SP = 24;
 
+    private static final float DEFAULT_BAR_PADDING_PX = 2;
+
+    private static final float DEFAULT_BAR_STROKE_PX = 1;
+
     private static final float DEFAULT_BAR_WEIGHT_PX = 2;
 
     private static final int DEFAULT_BAR_COLOR = Color.LTGRAY;
@@ -82,13 +85,12 @@ public class RangeBar extends View {
 
     private static final int DEFAULT_TICK_COLOR = Color.BLACK;
 
-    // Corresponds to material indigo 500.
-    private static final int DEFAULT_PIN_COLOR = 0xff3f51b5;
-
     private static final float DEFAULT_CONNECTING_LINE_WEIGHT_PX = 4;
 
     // Corresponds to material indigo 500.
     private static final int DEFAULT_CONNECTING_LINE_COLOR = 0xff3f51b5;
+
+    private static final int DEFAULT_SELECTOR_COLOR = 0x00000000;
 
     private static final float DEFAULT_EXPANDED_PIN_RADIUS_DP = 12;
 
@@ -106,11 +108,11 @@ public class RangeBar extends View {
 
     private float mTickInterval = DEFAULT_TICK_INTERVAL;
 
-    private float mBarWeight = DEFAULT_BAR_WEIGHT_PX;
+    private float mBarPadding = DEFAULT_BAR_PADDING_PX;
+
+    private float mBarStroke = DEFAULT_BAR_STROKE_PX;
 
     private int mBarColor = DEFAULT_BAR_COLOR;
-
-    private int mPinColor = DEFAULT_PIN_COLOR;
 
     private int mTextColor = DEFAULT_TEXT_COLOR;
 
@@ -122,9 +124,7 @@ public class RangeBar extends View {
 
     private int mTickColor = DEFAULT_TICK_COLOR;
 
-    private float mExpandedPinRadius = DEFAULT_EXPANDED_PIN_RADIUS_DP;
-
-    private int mCircleColor = DEFAULT_CONNECTING_LINE_COLOR;
+    private int mCircleColor = DEFAULT_SELECTOR_COLOR;
 
     private float mCircleSize = DEFAULT_CIRCLE_SIZE_DP;
 
@@ -170,8 +170,6 @@ public class RangeBar extends View {
 
     private int mActiveBarColor;
 
-    private int mActiveTickColor;
-
     private int mActiveCircleColor;
 
     //Used for ignoring vertical moves
@@ -184,12 +182,6 @@ public class RangeBar extends View {
     private float mLastY;
 
     private IRangeBarFormatter mFormatter;
-
-    private boolean drawTicks = true;
-
-    private boolean mDrawPins = true;
-
-    private boolean mArePinsTemporary = true;
 
     private PinTextFormatter mPinTextFormatter = new PinTextFormatter() {
         @Override
@@ -234,7 +226,8 @@ public class RangeBar extends View {
         bundle.putInt("TICK_COLOR", mTickColor);
 
         bundle.putFloat("TICK_HEIGHT_DP", mTickHeightDP);
-        bundle.putFloat("BAR_WEIGHT", mBarWeight);
+        bundle.putFloat("BAR_PADDING", mBarPadding);
+        bundle.putFloat("BAR_STROKE", mBarStroke);
         bundle.putInt("BAR_COLOR", mBarColor);
         bundle.putFloat("CONNECTING_LINE_WEIGHT", mConnectingLineWeight);
         bundle.putInt("CONNECTING_LINE_COLOR", mConnectingLineColor);
@@ -242,12 +235,9 @@ public class RangeBar extends View {
         bundle.putFloat("CIRCLE_SIZE", mCircleSize);
         bundle.putInt("CIRCLE_COLOR", mCircleColor);
         bundle.putFloat("THUMB_RADIUS_DP", mThumbRadiusDP);
-        bundle.putFloat("EXPANDED_PIN_RADIUS_DP", mExpandedPinRadius);
         bundle.putFloat("PIN_PADDING", mPinPadding);
         bundle.putFloat("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
-        bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
-        bundle.putBoolean("DRAW_PINS", mDrawPins);
         bundle.putInt("LEFT_INDEX", mLeftIndex);
         bundle.putInt("RIGHT_INDEX", mRightIndex);
 
@@ -272,7 +262,8 @@ public class RangeBar extends View {
             mTickInterval = bundle.getFloat("TICK_INTERVAL");
             mTickColor = bundle.getInt("TICK_COLOR");
             mTickHeightDP = bundle.getFloat("TICK_HEIGHT_DP");
-            mBarWeight = bundle.getFloat("BAR_WEIGHT");
+            mBarPadding = bundle.getFloat("BAR_PADDING");
+            mBarStroke = bundle.getFloat("BAR_STROKE");
             mBarColor = bundle.getInt("BAR_COLOR");
             mCircleSize = bundle.getFloat("CIRCLE_SIZE");
             mCircleColor = bundle.getInt("CIRCLE_COLOR");
@@ -280,12 +271,9 @@ public class RangeBar extends View {
             mConnectingLineColor = bundle.getInt("CONNECTING_LINE_COLOR");
 
             mThumbRadiusDP = bundle.getFloat("THUMB_RADIUS_DP");
-            mExpandedPinRadius = bundle.getFloat("EXPANDED_PIN_RADIUS_DP");
             mPinPadding = bundle.getFloat("PIN_PADDING");
             mBarPaddingBottom = bundle.getFloat("BAR_PADDING_BOTTOM");
             mIsRangeBar = bundle.getBoolean("IS_RANGE_BAR");
-            mArePinsTemporary = bundle.getBoolean("ARE_PINS_TEMPORARY");
-            mDrawPins = bundle.getBoolean("DRAW_PINS");
 
             mLeftIndex = bundle.getInt("LEFT_INDEX");
             mRightIndex = bundle.getInt("RIGHT_INDEX");
@@ -346,26 +334,24 @@ public class RangeBar extends View {
 
         // Create the two thumb objects and position line in view
         float density = getResources().getDisplayMetrics().density;
-        float expandedPinRadius = mExpandedPinRadius / density;
 
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
             mLeftThumb = new PinView(ctx);
             mLeftThumb.setFormatter(mFormatter);
-            mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                    mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mDrawPins);
+            mLeftThumb.init(ctx, yPos, mTextColor, mCircleSize,
+                    mCircleColor, mMinPinFont, mMaxPinFont);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb.setFormatter(mFormatter);
-        mRightThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mDrawPins);
+        mRightThumb.init(ctx, yPos, mTextColor, mCircleSize,
+                mCircleColor, mMinPinFont, mMaxPinFont);
 
         // Create the underlying bar.
-        final float marginLeft = Math.max(mExpandedPinRadius, mCircleSize);
+        final float marginLeft = getMarginLeft();
 
         final float barLength = w - (2 * marginLeft);
-        mBar = new Bar(ctx, marginLeft, yPos, barLength, mTickCount, mTickHeightDP, mTickColor,
-                mBarWeight, mBarColor);
+        mBar = new Bar(marginLeft, yPos, barLength, mTickCount, mBarPadding, mBarStroke, mBarColor);
 
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
@@ -401,15 +387,9 @@ public class RangeBar extends View {
         mBar.draw(canvas);
         if (mIsRangeBar) {
             mConnectingLine.draw(canvas, mLeftThumb, mRightThumb);
-            if (drawTicks) {
-                mBar.drawTicks(canvas);
-            }
             mLeftThumb.draw(canvas);
         } else {
             mConnectingLine.draw(canvas, getMarginLeft(), mRightThumb);
-            if (drawTicks) {
-                mBar.drawTicks(canvas);
-            }
         }
         mRightThumb.draw(canvas);
 
@@ -502,10 +482,6 @@ public class RangeBar extends View {
         }
 
         mFormatter = formatter;
-    }
-
-    public void setDrawTicks(boolean drawTicks) {
-        this.drawTicks = drawTicks;
     }
 
     /**
@@ -644,12 +620,12 @@ public class RangeBar extends View {
     /**
      * Set the weight of the bar line and the tick lines in the range bar.
      *
-     * @param barWeight Float specifying the weight of the bar and tick lines in
+     * @param barPadding Float specifying the weight of the bar and tick lines in
      *                  px.
      */
-    public void setBarWeight(float barWeight) {
+    public void setBarPadding(float barPadding) {
 
-        mBarWeight = barWeight;
+        mBarPadding = barPadding;
         createBar();
     }
 
@@ -661,16 +637,6 @@ public class RangeBar extends View {
     public void setBarColor(int barColor) {
         mBarColor = barColor;
         createBar();
-    }
-
-    /**
-     * Set the color of the pins.
-     *
-     * @param pinColor Integer specifying the color of the pin.
-     */
-    public void setPinColor(int pinColor) {
-        mPinColor = pinColor;
-        createPins();
     }
 
     /**
@@ -690,19 +656,6 @@ public class RangeBar extends View {
      */
     public void setRangeBarEnabled(boolean isRangeBar) {
         mIsRangeBar = isRangeBar;
-        invalidate();
-    }
-
-
-    /**
-     * Set if the pins should dissapear after released
-     *
-     * @param arePinsTemporary Boolean - true if pins shoudl dissapear after released, false to
-     *                         stay
-     *                         drawn
-     */
-    public void setTemporaryPins(boolean arePinsTemporary) {
-        mArePinsTemporary = arePinsTemporary;
         invalidate();
     }
 
@@ -750,17 +703,6 @@ public class RangeBar extends View {
 
         mConnectingLineColor = connectingLineColor;
         createConnectingLine();
-    }
-
-    /**
-     * If this is set, the thumb images will be replaced with a circle of the
-     * specified radius. Default width = 20dp.
-     *
-     * @param pinRadius Float specifying the radius of the thumbs to be drawn.
-     */
-    public void setPinRadius(float pinRadius) {
-        mExpandedPinRadius = pinRadius;
-        createPins();
     }
 
     /**
@@ -994,12 +936,10 @@ public class RangeBar extends View {
             mBarColor = DEFAULT_BAR_COLOR;
             mConnectingLineColor = DEFAULT_BAR_COLOR;
             mCircleColor = DEFAULT_BAR_COLOR;
-            mTickColor = DEFAULT_BAR_COLOR;
         } else {
             mBarColor = mActiveBarColor;
             mConnectingLineColor = mActiveConnectingLineColor;
             mCircleColor = mActiveCircleColor;
-            mTickColor = mActiveTickColor;
         }
 
         createBar();
@@ -1061,31 +1001,24 @@ public class RangeBar extends View {
                 Log.e(TAG, "tickCount less than 2; invalid tickCount. XML input ignored.");
             }
 
-            mTickHeightDP = ta
-                    .getDimension(R.styleable.RangeBar_tickHeight, DEFAULT_TICK_HEIGHT_DP);
-            mBarWeight = ta.getDimension(R.styleable.RangeBar_barWeight, DEFAULT_BAR_WEIGHT_PX);
+            mBarPadding = ta.getDimensionPixelSize(R.styleable.RangeBar_barPadding, (int)DEFAULT_BAR_PADDING_PX);
+            mBarStroke = ta.getDimensionPixelSize(R.styleable.RangeBar_barStroke, (int)DEFAULT_BAR_STROKE_PX);
             mBarColor = ta.getColor(R.styleable.RangeBar_rangeBarColor, DEFAULT_BAR_COLOR);
             mTextColor = ta.getColor(R.styleable.RangeBar_textColor, DEFAULT_TEXT_COLOR);
-            mPinColor = ta.getColor(R.styleable.RangeBar_pinColor, DEFAULT_PIN_COLOR);
             mActiveBarColor = mBarColor;
             mCircleSize = ta.getDimension(R.styleable.RangeBar_selectorSize,
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_CIRCLE_SIZE_DP,
                             getResources().getDisplayMetrics())
             );
             mCircleColor = ta.getColor(R.styleable.RangeBar_selectorColor,
-                    DEFAULT_CONNECTING_LINE_COLOR);
+                    DEFAULT_SELECTOR_COLOR);
             mActiveCircleColor = mCircleColor;
-            mTickColor = ta.getColor(R.styleable.RangeBar_tickColor, DEFAULT_TICK_COLOR);
-            mActiveTickColor = mTickColor;
+
             mConnectingLineWeight = ta.getDimension(R.styleable.RangeBar_connectingLineWeight,
                     DEFAULT_CONNECTING_LINE_WEIGHT_PX);
             mConnectingLineColor = ta.getColor(R.styleable.RangeBar_connectingLineColor,
                     DEFAULT_CONNECTING_LINE_COLOR);
             mActiveConnectingLineColor = mConnectingLineColor;
-            mExpandedPinRadius = ta
-                    .getDimension(R.styleable.RangeBar_pinRadius, TypedValue.applyDimension(
-                            TypedValue.COMPLEX_UNIT_DIP,
-                            DEFAULT_EXPANDED_PIN_RADIUS_DP, getResources().getDisplayMetrics()));
             mPinPadding = ta.getDimension(R.styleable.RangeBar_pinPadding, TypedValue
                     .applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PIN_PADDING_DP,
                             getResources().getDisplayMetrics()));
@@ -1093,8 +1026,6 @@ public class RangeBar extends View {
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                             DEFAULT_BAR_PADDING_BOTTOM_DP, getResources().getDisplayMetrics()));
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_rangeBar, true);
-            mArePinsTemporary = ta.getBoolean(R.styleable.RangeBar_temporaryPins, true);
-            mDrawPins = ta.getBoolean(R.styleable.RangeBar_drawPins, true);
 
             float density = getResources().getDisplayMetrics().density;
             mMinPinFont = ta.getDimension(R.styleable.RangeBar_pinMinFont,
@@ -1112,14 +1043,12 @@ public class RangeBar extends View {
      * Creates a new mBar
      */
     private void createBar() {
-        mBar = new Bar(getContext(),
-                getMarginLeft(),
+        mBar = new Bar(getMarginLeft(),
                 getYPos(),
                 getBarLength(),
                 mTickCount,
-                mTickHeightDP,
-                mTickColor,
-                mBarWeight,
+                mBarPadding,
+                mBarStroke,
                 mBarColor);
         invalidate();
     }
@@ -1145,18 +1074,13 @@ public class RangeBar extends View {
         Context ctx = getContext();
         float yPos = getYPos();
 
-        float density = getResources().getDisplayMetrics().density;
-        float expandedPinRadius = mExpandedPinRadius / density;
-
         if (mIsRangeBar) {
             mLeftThumb = new PinView(ctx);
-            mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor,
-                    mMinPinFont, mMaxPinFont, false, mDrawPins);
+            mLeftThumb.init(ctx, yPos, mTextColor, mCircleSize, mCircleColor, mMinPinFont, mMaxPinFont);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb
-                .init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
-                        mMaxPinFont, false, mDrawPins);
+                .init(ctx, yPos, mTextColor, mCircleSize, mCircleColor, mMinPinFont, mMaxPinFont);
 
         float marginLeft = getMarginLeft();
         float barLength = getBarLength();
@@ -1178,7 +1102,7 @@ public class RangeBar extends View {
      * @return float marginLeft
      */
     private float getMarginLeft() {
-        return Math.max(mExpandedPinRadius, mCircleSize);
+        return mBarPadding + mBarStroke;
     }
 
     /**
@@ -1370,19 +1294,6 @@ public class RangeBar extends View {
         if (mFirstSetTickCount) {
             mFirstSetTickCount = false;
         }
-        if (mArePinsTemporary) {
-            ValueAnimator animator = ValueAnimator.ofFloat(0, mExpandedPinRadius);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
-                    thumb.setSize(mThumbRadiusDP, mPinPadding * animation.getAnimatedFraction());
-                    invalidate();
-                }
-            });
-            animator.start();
-        }
 
         thumb.press();
     }
@@ -1400,22 +1311,7 @@ public class RangeBar extends View {
         int tickIndex = mBar.getNearestTickIndex(thumb);
         thumb.setXValue(getPinValue(tickIndex));
 
-        if (mArePinsTemporary) {
-            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, 0);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
-                    thumb.setSize(mThumbRadiusDP,
-                            mPinPadding - (mPinPadding * animation.getAnimatedFraction()));
-                    invalidate();
-                }
-            });
-            animator.start();
-        } else {
-            invalidate();
-        }
+        invalidate();
 
         thumb.release();
     }

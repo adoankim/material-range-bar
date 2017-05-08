@@ -10,7 +10,7 @@
     <string name="tickHeight">Tick Height = 24</string>
     <string name="barWeight">Bar Weight = 2</string>
     <string name="barColor">Bar Color = #CCCCCC</string>
-    <string name="connectingLineWeight">Connecting Line Weight = 4</string>
+    <string name="connectingLineWeight">Connecting Line Weight = 22</string>
     <string name="connectingLineColor">Connecting Line Color = #3F51B5</string>
     <string name="thumbRadius">Pin Size = 30</string>
     <string name="thumbColorNormal">Pin Color = #3F51B5</string>
