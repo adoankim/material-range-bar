@@ -1215,11 +1215,11 @@ public class RangeBar extends View {
             float rightThumbXDistance = Math.abs(mRightThumb.getX() - x);
 
             if (leftThumbXDistance < rightThumbXDistance) {
-                if (mIsRangeBar && (getMarginLeft() - x) >= getMarginLeft()) {
+                if (mIsRangeBar) {
                     mLeftThumb.setX(x);
                     releasePin(mLeftThumb);
                 }
-            } else if(getWidth() - rightThumbXDistance <= 0) {
+            } else {
                 mRightThumb.setX(x);
                 releasePin(mRightThumb);
             }
@@ -1229,7 +1229,11 @@ public class RangeBar extends View {
             final int newRightIndex = mBar.getNearestTickIndex(mRightThumb);
             // If either of the indices have changed, update and call the listener.
 
-            if (newLeftIndex != mLeftIndex  || newRightIndex != mRightIndex) {
+            if(newLeftIndex < mTickStart || newRightIndex > mTickEnd) {
+                if(newLeftIndex < mTickStart) mLeftIndex = newLeftIndex;
+                if(newRightIndex < mTickEnd) mLeftIndex = newLeftIndex;
+                createPins();
+            } else if (newLeftIndex != mLeftIndex  || newRightIndex != mRightIndex) {
 
                 mLeftIndex = newLeftIndex;
                 mRightIndex = newRightIndex;

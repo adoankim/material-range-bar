@@ -13,11 +13,8 @@
 
 package com.appyvet.rangebar;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.TypedValue;
 
 /**
  * Class representing the blue connecting line between the two thumbs.
