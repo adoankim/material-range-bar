@@ -25,10 +25,11 @@
             android:id="@+id/rangebar1"
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            custom:connectingLineWeight="12dp"
+            custom:connectingLineWeight="20dp"
             custom:connectingLineColor="#000000"
-            custom:barPadding="14dp"
+            custom:barPadding="28dp"
             custom:barStroke="1dp"
+            custom:barRoundRatio="20dp"
             custom:rangeBarColor="#AA000000"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"/>

@@ -28,6 +28,7 @@ public class Bar {
     // Member Variables ////////////////////////////////////////////////////////
     private final RectF mBoundRect;
     private final Paint mBoundRectPaint;
+    private final float mBarRoundRatio;
     // Left-coordinate of the horizontal bar.
     private final float mLeftX;
 
@@ -46,13 +47,14 @@ public class Bar {
     /**
      * Bar constructor
      *
-     * @param x            the start x co-ordinate
-     * @param y            the y co-ordinate
-     * @param length       the length of the bar in px
-     * @param tickCount    the number of ticks on the bar
-     * @param barColor     the color of the bar
-     * @param barPadding   the padding of the bar
-     * @param barStroke    the stroke size of the bar
+     * @param x             the start x co-ordinate
+     * @param y             the y co-ordinate
+     * @param length        the length of the bar in px
+     * @param tickCount     the number of ticks on the bar
+     * @param barColor      the color of the bar
+     * @param barPadding    the padding of the bar
+     * @param barStroke     the stroke size of the bar
+     * @param barRoundRatio the round edges ratio of the bar
      */
     public Bar(float x,
             float y,
@@ -60,11 +62,13 @@ public class Bar {
             int tickCount,
             float barPadding,
             float barStroke,
+            float barRoundRatio,
             int barColor) {
 
         mLeftX = x;
         mRightX = x + length;
         mY = y;
+        mBarRoundRatio = barRoundRatio;
 
         mNumSegments = tickCount - 1;
         mTickDistance = length / mNumSegments;
@@ -75,10 +79,10 @@ public class Bar {
         mBoundRectPaint.setAntiAlias(true);
         mBoundRectPaint.setStyle(Paint.Style.STROKE);
 
-        mBoundRect = new RectF(mLeftX - barPadding,
-                mY - barPadding,
-                mRightX + barPadding,
-                mY + barPadding);
+        mBoundRect = new RectF(mLeftX - barPadding/2.0f,
+                mY - barPadding/2.0f,
+                mRightX + barPadding/2.0f,
+                mY + barPadding/2.0f);
     }
 
     // Package-Private Methods /////////////////////////////////////////////////
@@ -91,7 +95,7 @@ public class Bar {
      */
     public void draw(Canvas canvas) {
 
-        canvas.drawRoundRect(mBoundRect, 30, 30, mBoundRectPaint);
+        canvas.drawRoundRect(mBoundRect, mBarRoundRatio, mBarRoundRatio, mBoundRectPaint);
     }
 
     /**

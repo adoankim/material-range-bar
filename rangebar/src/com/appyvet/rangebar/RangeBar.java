@@ -73,11 +73,11 @@ public class RangeBar extends View {
 
     public static final float DEFAULT_MAX_PIN_FONT_SP = 24;
 
-    private static final float DEFAULT_BAR_PADDING_PX = 2;
+    private static final float DEFAULT_BAR_PADDING_DP = 8;
 
-    private static final float DEFAULT_BAR_STROKE_PX = 1;
+    private static final float DEFAULT_BAR_STROKE_DP = 1;
 
-    private static final float DEFAULT_BAR_WEIGHT_PX = 2;
+    private static final float DEFAULT_BAR_ROUND_RATIO_DP = 16;
 
     private static final int DEFAULT_BAR_COLOR = Color.LTGRAY;
 
@@ -108,9 +108,11 @@ public class RangeBar extends View {
 
     private float mTickInterval = DEFAULT_TICK_INTERVAL;
 
-    private float mBarPadding = DEFAULT_BAR_PADDING_PX;
+    private float mBarPadding = DEFAULT_BAR_PADDING_DP;
 
-    private float mBarStroke = DEFAULT_BAR_STROKE_PX;
+    private float mBarStroke = DEFAULT_BAR_STROKE_DP;
+
+    private float mBarRoundRatio = DEFAULT_BAR_ROUND_RATIO_DP;
 
     private int mBarColor = DEFAULT_BAR_COLOR;
 
@@ -228,6 +230,7 @@ public class RangeBar extends View {
         bundle.putFloat("TICK_HEIGHT_DP", mTickHeightDP);
         bundle.putFloat("BAR_PADDING", mBarPadding);
         bundle.putFloat("BAR_STROKE", mBarStroke);
+        bundle.putFloat("BAR_ROUND_RATIO", mBarRoundRatio);
         bundle.putInt("BAR_COLOR", mBarColor);
         bundle.putFloat("CONNECTING_LINE_WEIGHT", mConnectingLineWeight);
         bundle.putInt("CONNECTING_LINE_COLOR", mConnectingLineColor);
@@ -264,6 +267,7 @@ public class RangeBar extends View {
             mTickHeightDP = bundle.getFloat("TICK_HEIGHT_DP");
             mBarPadding = bundle.getFloat("BAR_PADDING");
             mBarStroke = bundle.getFloat("BAR_STROKE");
+            mBarRoundRatio = bundle.getFloat("BAR_ROUND_RATIO");
             mBarColor = bundle.getInt("BAR_COLOR");
             mCircleSize = bundle.getFloat("CIRCLE_SIZE");
             mCircleColor = bundle.getInt("CIRCLE_COLOR");
@@ -351,7 +355,8 @@ public class RangeBar extends View {
         final float marginLeft = getMarginLeft();
 
         final float barLength = w - (2 * marginLeft);
-        mBar = new Bar(marginLeft, yPos, barLength, mTickCount, mBarPadding, mBarStroke, mBarColor);
+        mBar = new Bar(marginLeft, yPos, barLength, mTickCount, mBarPadding, mBarStroke,
+                mBarRoundRatio, mBarColor);
 
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
@@ -375,7 +380,7 @@ public class RangeBar extends View {
         }
 
         // Create the line connecting the two thumbs.
-        mConnectingLine = new ConnectingLine(ctx, yPos, mConnectingLineWeight,
+        mConnectingLine = new ConnectingLine(yPos, mConnectingLineWeight,
                 mConnectingLineColor);
     }
 
@@ -1001,8 +1006,15 @@ public class RangeBar extends View {
                 Log.e(TAG, "tickCount less than 2; invalid tickCount. XML input ignored.");
             }
 
-            mBarPadding = ta.getDimensionPixelSize(R.styleable.RangeBar_barPadding, (int)DEFAULT_BAR_PADDING_PX);
-            mBarStroke = ta.getDimensionPixelSize(R.styleable.RangeBar_barStroke, (int)DEFAULT_BAR_STROKE_PX);
+            mBarPadding = ta.getDimension(R.styleable.RangeBar_barPadding,
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BAR_PADDING_DP,
+                            getResources().getDisplayMetrics()));
+            mBarStroke = ta.getDimension(R.styleable.RangeBar_barStroke,
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BAR_STROKE_DP,
+                            getResources().getDisplayMetrics()));
+            mBarRoundRatio = ta.getDimension(R.styleable.RangeBar_barRoundRatio,
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BAR_ROUND_RATIO_DP,
+                            getResources().getDisplayMetrics()));
             mBarColor = ta.getColor(R.styleable.RangeBar_rangeBarColor, DEFAULT_BAR_COLOR);
             mTextColor = ta.getColor(R.styleable.RangeBar_textColor, DEFAULT_TEXT_COLOR);
             mActiveBarColor = mBarColor;
@@ -1049,6 +1061,7 @@ public class RangeBar extends View {
                 mTickCount,
                 mBarPadding,
                 mBarStroke,
+                mBarRoundRatio,
                 mBarColor);
         invalidate();
     }
@@ -1058,8 +1071,7 @@ public class RangeBar extends View {
      */
     private void createConnectingLine() {
 
-        mConnectingLine = new ConnectingLine(getContext(),
-                getYPos(),
+        mConnectingLine = new ConnectingLine(getYPos(),
                 mConnectingLineWeight,
                 mConnectingLineColor);
         invalidate();
@@ -1207,7 +1219,7 @@ public class RangeBar extends View {
                     mLeftThumb.setX(x);
                     releasePin(mLeftThumb);
                 }
-            } else {
+            } else if(getWidth() - rightThumbXDistance <= 0) {
                 mRightThumb.setX(x);
                 releasePin(mRightThumb);
             }
@@ -1216,7 +1228,8 @@ public class RangeBar extends View {
             final int newLeftIndex = mIsRangeBar ? mBar.getNearestTickIndex(mLeftThumb) : 0;
             final int newRightIndex = mBar.getNearestTickIndex(mRightThumb);
             // If either of the indices have changed, update and call the listener.
-            if (newLeftIndex != mLeftIndex || newRightIndex != mRightIndex) {
+
+            if (newLeftIndex != mLeftIndex  || newRightIndex != mRightIndex) {
 
                 mLeftIndex = newLeftIndex;
                 mRightIndex = newRightIndex;

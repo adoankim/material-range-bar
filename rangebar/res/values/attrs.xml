@@ -6,7 +6,7 @@
         <attr name="tickInterval" format="float" />
         <attr name="barPadding" format="dimension" />
         <attr name="barStroke" format="dimension" />
-        <attr name="barWeight" format="dimension" />
+        <attr name="barRoundRatio" format="dimension" />
         <attr name="rangeBarColor" format="reference|color" />
         <attr name="textColor" format="reference|color" />
         <attr name="pinColor" format="reference|color" />

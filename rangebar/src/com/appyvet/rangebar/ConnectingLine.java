@@ -36,19 +36,15 @@ public class ConnectingLine {
     /**
      * Constructor for connecting line
      *
-     * @param ctx                  the context for the line
      * @param y                    the y co-ordinate for the line
      * @param connectingLineWeight the weight of the line
      * @param connectingLineColor  the color of the line
      */
-    public ConnectingLine(Context ctx, float y, float connectingLineWeight,
+    public ConnectingLine(float y, float connectingLineWeight,
             int connectingLineColor) {
 
-        final Resources res = ctx.getResources();
 
-        mConnectingLineWeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                connectingLineWeight,
-                res.getDisplayMetrics());
+        mConnectingLineWeight = connectingLineWeight;
 
         // Initialize the paint, set values
         mPaint = new Paint();
