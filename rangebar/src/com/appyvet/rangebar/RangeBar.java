@@ -1231,7 +1231,7 @@ public class RangeBar extends View {
 
             if(newLeftIndex < mTickStart || newRightIndex > mTickEnd) {
                 if(newLeftIndex < mTickStart) mLeftIndex = (int) mTickStart;
-                if(newRightIndex < mTickEnd) mLeftIndex = (int) mTickEnd;
+                if(newRightIndex > mTickEnd) mRightIndex = (int) mTickEnd;
                 createPins();
             } else if (newLeftIndex != mLeftIndex  || newRightIndex != mRightIndex) {
 
