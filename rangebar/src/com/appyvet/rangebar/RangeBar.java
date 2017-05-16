@@ -1230,8 +1230,8 @@ public class RangeBar extends View {
             // If either of the indices have changed, update and call the listener.
 
             if(newLeftIndex < mTickStart || newRightIndex > mTickEnd) {
-                if(newLeftIndex < mTickStart) mLeftIndex = newLeftIndex;
-                if(newRightIndex < mTickEnd) mLeftIndex = newLeftIndex;
+                if(newLeftIndex < mTickStart) mLeftIndex = (int) mTickStart;
+                if(newRightIndex < mTickEnd) mLeftIndex = (int) mTickEnd;
                 createPins();
             } else if (newLeftIndex != mLeftIndex  || newRightIndex != mRightIndex) {
 
